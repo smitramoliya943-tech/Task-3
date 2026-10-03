@@ -1,0 +1,202 @@
+
+<!DOCTYPE html>
+<html lang="gu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Result Management System</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">🎓</div>
+      <div>
+        <h2>SRMS</h2>
+        <small>Student Result System</small>
+      </div>
+    </div>
+    <ul class="nav-links">
+      <li class="active">📊 Dashboard</li>
+      <li>👥 Students</li>
+      <li>📑 Results</li>
+      <li>📈 Reports</li>
+      <li>⚙️ Settings</li>
+    </ul>
+  </aside>
+
+  <div class="main-wrapper">
+    <header class="top-bar">
+      <input type="text" id="globalSearch" placeholder="Search students, results..." oninput="filterData()">
+      <div class="user-profile">
+        <span>🔔</span>
+        <div class="avatar">👨‍💼</div>
+        <div>
+          <strong style="display:block; font-size:13px;">Admin User</strong>
+          <small style="color:#64748b; font-size:11px;">Administrator</small>
+        </div>
+      </div>
+    </header>
+
+    <main class="content-area">
+      <div class="banner">
+        <div>
+          <h1>Student Result Management System</h1>
+          <p>Manage student marks, grades, and performance easily.</p>
+        </div>
+        <div class="banner-badge">A+</div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon icon-blue">👥</div>
+          <div>
+            <span class="stat-label">Total Students</span>
+            <div class="stat-value" id="totalStudentsCount">0</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-green">✅</div>
+          <div>
+            <span class="stat-label">Passed</span>
+            <div class="stat-value" id="passedCount">0</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-red">❌</div>
+          <div>
+            <span class="stat-label">Failed</span>
+            <div class="stat-value" id="failedCount">0</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon icon-yellow">📊</div>
+          <div>
+            <span class="stat-label">Average Percentage</span>
+            <div class="stat-value" id="avgPercentage">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="layout-grid">
+        <section class="table-section">
+          <div class="table-header">
+            <h3>Student Results</h3>
+            <div class="filter-controls">
+              <select id="courseFilter" onchange="filterData()">
+                <option value="All">All Courses</option>
+                <option value="BCA">BCA</option>
+                <option value="B.Sc">B.Sc</option>
+                <option value="B.Com">B.Com</option>
+              </select>
+              <select id="sortFilter" onchange="filterData()">
+                <option value="default">Sort Options</option>
+                <option value="high">Percentage: High to Low</option>
+                <option value="low">Percentage: Low to High</option>
+              </select>
+              <button class="btn btn-primary" onclick="resetForm()">+ Add New</button>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>Roll No</th>
+                  <th>Student Name</th>
+                  <th>Course</th>
+                  <th>Math</th>
+                  <th>Science</th>
+                  <th>English</th>
+                  <th>Total</th>
+                  <th>Percentage</th>
+                  <th>Grade</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="studentTableBody">
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <aside class="side-panel">
+          <div class="form-card">
+            <h3 id="formTitle">Add / Edit Result</h3>
+            <form id="studentForm" onsubmit="handleFormSubmit(event)">
+              <input type="hidden" id="editIndex" value="-1">
+
+              <div class="form-group">
+                <label>Student Name</label>
+                <input type="text" id="studentName" required placeholder="Enter student name">
+              </div>
+
+              <div class="form-group">
+                <label>Roll No</label>
+                <input type="number" id="rollNo" required placeholder="Enter roll number">
+              </div>
+
+              <div class="form-group">
+                <label>Course</label>
+                <select id="courseName" required>
+                  <option value="BCA">BCA</option>
+                  <option value="B.Sc">B.Sc</option>
+                  <option value="B.Com">B.Com</option>
+                </select>
+              </div>
+
+              <div class="marks-row">
+                <div class="form-group">
+                  <label>Math Marks</label>
+                  <input type="number" id="mathMarks" min="0" max="100" required placeholder="0-100">
+                </div>
+                <div class="form-group">
+                  <label>Science Marks</label>
+                  <input type="number" id="scienceMarks" min="0" max="100" required placeholder="0-100">
+                </div>
+                <div class="form-group">
+                  <label>English Marks</label>
+                  <input type="number" id="englishMarks" min="0" max="100" required placeholder="0-100">
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 8px; margin-top: 15px;">
+                <button type="submit" class="btn btn-primary" style="flex: 1;" id="saveBtn">Save Result</button>
+                <button type="button" class="btn btn-secondary" onclick="resetForm()">Cancel</button>
+              </div>
+            </form>
+          </div>
+
+          <div class="chart-card">
+            <h3>Subject Performance Overview</h3>
+            <div class="chart-bars">
+              <div class="chart-col">
+                <div class="chart-bar bar-math" id="barMath" style="height: 0%;"></div>
+                <div class="chart-label">Math</div>
+              </div>
+              <div class="chart-col">
+                <div class="chart-bar bar-sci" id="barSci" style="height: 0%;"></div>
+                <div class="chart-label">Science</div>
+              </div>
+              <div class="chart-col">
+                <div class="chart-bar bar-eng" id="barEng" style="height: 0%;"></div>
+                <div class="chart-label">English</div>
+              </div>
+              <div class="chart-col">
+                <div class="chart-bar bar-avg" id="barAvg" style="height: 0%;"></div>
+                <div class="chart-label">Average</div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+
